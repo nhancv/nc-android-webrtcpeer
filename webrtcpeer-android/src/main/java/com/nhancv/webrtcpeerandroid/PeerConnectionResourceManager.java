@@ -53,7 +53,7 @@ final class PeerConnectionResourceManager {
             preferIsac = true;
         }
 
-        connections = new HashMap<String, NPeerConnection>();
+        connections = new HashMap<>();
     }
 
     NPeerConnection createPeerConnection(SignalingParameters signalingParameters,
@@ -68,7 +68,9 @@ final class PeerConnectionResourceManager {
         this.pcConstraints = pcConstraints;
 
         Log.d(TAG, "Create peer connection.");
-        Log.d(TAG, "PCConstraints: " + pcConstraints.toString());
+        if (pcConstraints != null) {
+            Log.d(TAG, "PCConstraints: " + pcConstraints.toString());
+        }
 
         // TCP candidates are only useful when connecting to a server that supports ICE-TCP.
         PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(signalingParameters.iceServers);

@@ -43,15 +43,15 @@ public class NPeerConnection implements PeerConnection.Observer, SdpObserver {
                            LooperExecutor executor, NWebRTCPeer.NPeerConnectionParameters params) {
 
         this.connectionId = connectionId;
-        observers = new Vector<NWebRTCPeer.Observer>();
+        this.observers = new Vector<>();
         this.preferIsac = preferIsac;
         this.videoCallEnabled = videoCallEnabled;
         this.preferH264 = preferH264;
         this.executor = executor;
-        isInitiator = false;
-        peerConnectionParameters = params;
-        queuedRemoteCandidates = new LinkedList<IceCandidate>();
-        observedDataChannels = new HashMap<>();
+        this.isInitiator = false;
+        this.peerConnectionParameters = params;
+        this.queuedRemoteCandidates = new LinkedList<>();
+        this.observedDataChannels = new HashMap<>();
     }
 
     /**
