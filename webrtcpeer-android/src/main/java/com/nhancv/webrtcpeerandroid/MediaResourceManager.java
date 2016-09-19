@@ -109,6 +109,7 @@ final class MediaResourceManager implements NWebRTCPeer.Observer {
     }
 
     public boolean isBroadcastMode() {
+        Log.e(TAG, "isBroadcastMode: " + isBroadcastMode);
         return isBroadcastMode;
     }
 
@@ -178,7 +179,7 @@ final class MediaResourceManager implements NWebRTCPeer.Observer {
         if (videoCallEnabled || peerConnectionParameters.loopback) {
             sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", isBroadcastMode() ? "false" : "true"));
         } else {
-            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", isBroadcastMode() ? "false" : "false"));
+            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "false"));
         }
     }
 
