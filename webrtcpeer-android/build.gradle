@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
-Integer VERSION_CODE = 2016091912
-String VERSION_NAME = "1.1"
+Integer VERSION_CODE = 2016091916
+String VERSION_NAME = "1.0.1"
 
 android {
     compileSdkVersion 23
