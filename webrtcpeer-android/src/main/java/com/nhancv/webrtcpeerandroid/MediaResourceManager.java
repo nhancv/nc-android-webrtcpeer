@@ -22,7 +22,7 @@ import java.util.HashMap;
 
 /**
  * The class implements the management of media resources.
- * <p/>
+ * <p>
  * The implementation is based on PeerConnectionClient.java of package org.appspot.apprtc
  * (please see the copyright notice below)
  */
@@ -94,6 +94,7 @@ final class MediaResourceManager implements NWebRTCPeer.Observer {
     private NWebRTCPeer.NPeerConnectionParameters peerConnectionParameters;
     private VideoCapturerAndroid videoCapturer;
     private NMediaConfiguration.NCameraPosition currentCameraPosition;
+    private boolean isBroadcastMode;
 
     MediaResourceManager(NWebRTCPeer.NPeerConnectionParameters peerConnectionParameters,
                          LooperExecutor executor, PeerConnectionFactory factory) {
@@ -104,6 +105,15 @@ final class MediaResourceManager implements NWebRTCPeer.Observer {
         renderVideo = true;
         remoteVideoTracks = new HashMap<>();
         videoCallEnabled = peerConnectionParameters.videoCallEnabled;
+        isBroadcastMode = false;
+    }
+
+    public boolean isBroadcastMode() {
+        return isBroadcastMode;
+    }
+
+    public void setBroadcastMode(boolean broadcastMode) {
+        isBroadcastMode = broadcastMode;
     }
 
     void createMediaConstraints() {
@@ -164,11 +174,11 @@ final class MediaResourceManager implements NWebRTCPeer.Observer {
         }
         // Create SDP constraints.
         sdpMediaConstraints = new MediaConstraints();
-        sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"));
+        sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveAudio", isBroadcastMode() ? "false" : "true"));
         if (videoCallEnabled || peerConnectionParameters.loopback) {
-            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"));
+            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", isBroadcastMode() ? "false" : "true"));
         } else {
-            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "false"));
+            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", isBroadcastMode() ? "false" : "false"));
         }
     }
 

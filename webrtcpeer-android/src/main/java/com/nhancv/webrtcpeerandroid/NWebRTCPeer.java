@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Class implements the interface for managing WebRTC connections in harmonious manner with
  * other Kurento APIs (HTML5 and iOs).
- * <p/>
+ * <p>
  * The implementation is based on PeerConnectionClient.java of package org.appspot.apprtc
  * (please see the copyright notice below)
  */
@@ -120,6 +120,14 @@ public class NWebRTCPeer {
                 mediaResourceManager = new MediaResourceManager(peerConnectionParameters, executor, peerConnectionFactory);
             }
         });
+    }
+
+    /**
+     * Set is broadcast mode: send only
+     * This method should be called after "initialize()" method
+     */
+    public void setBroadcastMode() {
+        mediaResourceManager.setBroadcastMode(true);
     }
 
     /**
