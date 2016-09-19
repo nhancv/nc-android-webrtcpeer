@@ -74,12 +74,13 @@ public class NWebRTCPeer {
     /**
      * NWebRTCPeer constructor
      * <p>
-     *     This constructor should always be used in order to properly create a NWebRTCPeer instance
+     * This constructor should always be used in order to properly create a NWebRTCPeer instance
      * </p>
-     * @param  config            Media configuration instance
-     * @param  context            Android context instance
-     * @param  localRenderer        Callback for rendering the locally produced media stream
-     * @param  observer            An observer instance which implements WebRTC callback functions
+     *
+     * @param config        Media configuration instance
+     * @param context       Android context instance
+     * @param localRenderer Callback for rendering the locally produced media stream
+     * @param observer      An observer instance which implements WebRTC callback functions
      */
     public NWebRTCPeer(NMediaConfiguration config, Context context,
                        VideoRenderer.Callbacks localRenderer, Observer observer) {
@@ -101,6 +102,7 @@ public class NWebRTCPeer {
 
         iceServers = new LinkedList<>();
         addIceServer("stun:stun.l.google.com:19302");
+        initialize();
     }
 
     /**
@@ -109,7 +111,7 @@ public class NWebRTCPeer {
      * NWebRTCPeer must be initialized before use. This function can be called immediately after constructor
      * <p>
      */
-    public void initialize() {
+    private void initialize() {
         initialized = true;
         executor.execute(new Runnable() {
             @Override
@@ -123,17 +125,31 @@ public class NWebRTCPeer {
     }
 
     /**
-     * Set is broadcast mode: send only
+     * Get stream mode, should be called in executor thread
+     *
+     * @return
+     */
+    public StreamMode getStreamMode() {
+        return mediaResourceManager.getStreamMode();
+    }
+
+    /**
+     * Set stream mode (send only, recv only, sendrecv: default)
      * This method should be called after "initialize()" method
      */
-    public void setBroadcastMode() {
-        mediaResourceManager.setBroadcastMode(true);
+    public void setStreamMode(final StreamMode streamMode) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mediaResourceManager.setStreamMode(streamMode);
+            }
+        });
     }
 
     /**
      * Generate SDP offer
      *
-     * @param  connectionId        A unique identifier for the connection
+     * @param connectionId A unique identifier for the connection
      */
     public void generateOffer(String connectionId, boolean includeLocalMedia) {
         executor.execute(new GenerateOfferTask(connectionId, includeLocalMedia));
@@ -162,9 +178,10 @@ public class NWebRTCPeer {
     /**
      * Processes received SDP offer
      * <p>
-     *
      * <p>
-     * @param remoteOffer The received offer
+     * <p>
+     *
+     * @param remoteOffer  The received offer
      * @param connectionId A unique identifier for the connection
      */
     public void processOffer(SessionDescription remoteOffer, String connectionId) {
@@ -173,6 +190,7 @@ public class NWebRTCPeer {
 
     /**
      * Processes received SDP answer
+     *
      * @param remoteAnswer The received answer
      * @param connectionId A unique identifier for the connection
      */
@@ -188,8 +206,9 @@ public class NWebRTCPeer {
 
     /**
      * Adds remote ice candidate for connection
+     *
      * @param remoteIceCandidate The received ICE candidate
-     * @param connectionId A unique identifier for the connection
+     * @param connectionId       A unique identifier for the connection
      */
     public void addRemoteIceCandidate(IceCandidate remoteIceCandidate, String connectionId) {
         NPeerConnection connection = peerConnectionResourceManager.getConnection(connectionId);
@@ -203,6 +222,7 @@ public class NWebRTCPeer {
 
     /**
      * Closes specific connection
+     *
      * @param connectionId A unique identifier for the connection
      */
     public void closeConnection(String connectionId) {
@@ -232,7 +252,11 @@ public class NWebRTCPeer {
             @Override
             public void run() {
                 for (NPeerConnection c : peerConnectionResourceManager.getConnections()) {
-                    c.getPc().removeStream(mediaResourceManager.getLocalMediaStream());
+                    try {
+                        c.getPc().removeStream(mediaResourceManager.getLocalMediaStream());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 peerConnectionResourceManager.closeAllConnections();
                 mediaResourceManager.close();
@@ -256,6 +280,7 @@ public class NWebRTCPeer {
 
     /**
      * Starts local media playback
+     *
      * @return true if local media video source was successfully initiated, otherwise false
      */
     public boolean startLocalMedia() {
@@ -281,6 +306,7 @@ public class NWebRTCPeer {
 
     /**
      * Attaches remote stream to renderer
+     *
      * @param remoteRender A render callback for rendering the remote media
      * @param remoteStream The remote media stream
      */
@@ -290,6 +316,7 @@ public class NWebRTCPeer {
 
     /**
      * Select active camera for local media
+     *
      * @param position The camera identifier (usually either back or front camera e.g. in camera)
      */
     public void selectCameraPosition(NMediaConfiguration.NCameraPosition position) {
@@ -298,6 +325,7 @@ public class NWebRTCPeer {
 
     /**
      * Check if a specific camera is available on the device
+     *
      * @param position The camera position to query
      * @return true if position is available on the device, otherwise false
      */
@@ -307,6 +335,7 @@ public class NWebRTCPeer {
 
     /**
      * Check if video is enabled
+     *
      * @return true if video is enabled, otherwise false
      */
     public boolean videoEnabled() {
@@ -315,6 +344,7 @@ public class NWebRTCPeer {
 
     /**
      * Enable or disable video
+     *
      * @param enable If true then video will be enabled, if false then video will be disabled
      */
     public void enableVideo(boolean enable) {
@@ -323,6 +353,7 @@ public class NWebRTCPeer {
 
     /**
      * Check if audio is enabled
+     *
      * @return true if audio is enabled, otherwise false
      */
     public boolean audioEnabled() {
@@ -331,6 +362,7 @@ public class NWebRTCPeer {
 
     /**
      * Enable or disable audio
+     *
      * @param enable If true then audio will be enabled, if false then audio will be disabled
      */
     public void enableAudio(boolean enable) {
@@ -339,6 +371,7 @@ public class NWebRTCPeer {
 
     /**
      * Check if video is authorized
+     *
      * @return true if video is authorized, otherwise false
      */
     public boolean videoAuthorized() {
@@ -347,6 +380,7 @@ public class NWebRTCPeer {
 
     /**
      * Check if audio is authorized
+     *
      * @return true if audio is authorized, otherwise false
      */
     public boolean audioAuthorized() {
@@ -377,6 +411,12 @@ public class NWebRTCPeer {
         Log.d(TAG, "Peer connection peerConnectionFactory created.");
     }
 
+    public enum StreamMode {
+        SEND_ONLY,
+        RECV_ONLY,
+        SENDRECV
+    }
+
     /**
      * An interface which declares WebRTC callbacks
      * <p>
@@ -388,41 +428,47 @@ public class NWebRTCPeer {
 
         /**
          * WebRTC event which is triggered when local SDP offer has been generated
+         *
          * @param localSdpOffer The generated local SDP offer
-         * @param connection The connection for which this event takes place
+         * @param connection    The connection for which this event takes place
          */
         void onLocalSdpOfferGenerated(SessionDescription localSdpOffer, NPeerConnection connection);
 
         /**
          * WebRTC event which is triggered when local SDP answer has been generated
+         *
          * @param localSdpAnswer The generated local SDP answer
-         * @param connection The connection for which this event takes place
+         * @param connection     The connection for which this event takes place
          */
         void onLocalSdpAnswerGenerated(SessionDescription localSdpAnswer, NPeerConnection connection);
 
         /**
          * WebRTC event which is triggered when new ice candidate is received
+         *
          * @param localIceCandidate Ice candidate
-         * @param connection The connection for which this event takes place
+         * @param connection        The connection for which this event takes place
          */
         void onIceCandidate(IceCandidate localIceCandidate, NPeerConnection connection);
 
         /**
          * WebRTC event which is triggered when ICE status has changed
-         * @param state The new ICE connection state
+         *
+         * @param state      The new ICE connection state
          * @param connection The connection for which this event takes place
          */
         void onIceStatusChanged(IceConnectionState state, NPeerConnection connection);
 
         /**
          * WebRTC event which is triggered when A new remote stream is added to connection
-         * @param stream The new remote media stream
+         *
+         * @param stream     The new remote media stream
          * @param connection The connection for which this event takes place
          */
         void onRemoteStreamAdded(MediaStream stream, NPeerConnection connection);
 
         /**
          * WebRTC event which is triggered when a remote media stream is terminated
+         *
          * @param stream
          * @param connection The connection for which this event takes place
          */
@@ -430,38 +476,43 @@ public class NWebRTCPeer {
 
         /**
          * WebRTC event which is triggered when there is an error with the connection
+         *
          * @param error Error string
          */
         void onPeerConnectionError(String error);
 
         /**
          * WebRTC event which is triggered when peer opens a data channel
+         *
          * @param dataChannel The data channel
-         * @param connection The connection for which the data channel belongs to
+         * @param connection  The connection for which the data channel belongs to
          */
         void onDataChannel(DataChannel dataChannel, NPeerConnection connection);
 
         /**
          * WebRTC event which is triggered when a data channel buffer amount has changed
-         * @param l The previous amount
+         *
+         * @param l          The previous amount
          * @param connection The connection for which the data channel belongs to
-         * @param channel The data channel which triggered the event
+         * @param channel    The data channel which triggered the event
          */
         void onBufferedAmountChange(long l, NPeerConnection connection, DataChannel channel);
 
         /**
          * WebRTC event which is triggered when a data channel state has changed. Possible values:
          * DataChannel.State { CONNECTING, OPEN, CLOSING, CLOSED };
+         *
          * @param connection The connection for which the data channel belongs to
-         * @param channel The data channel which triggered the event
+         * @param channel    The data channel which triggered the event
          */
         void onStateChange(NPeerConnection connection, DataChannel channel);
 
         /**
          * WebRTC event which is triggered when a message is received from a data channel
-         * @param buffer The message buffer
+         *
+         * @param buffer     The message buffer
          * @param connection The connection for which the data channel belongs to
-         * @param channel The data channel which triggered the event
+         * @param channel    The data channel which triggered the event
          */
         void onMessage(DataChannel.Buffer buffer, NPeerConnection connection, DataChannel channel);
     }
@@ -546,15 +597,14 @@ public class NWebRTCPeer {
         public void run() {
             if (mediaResourceManager.getLocalMediaStream() == null) {
                 mediaResourceManager.createMediaConstraints();
-                startLocalMediaSync();
+                if (getStreamMode() != StreamMode.RECV_ONLY) {
+                    startLocalMediaSync();
+                }
             }
-
             NPeerConnection connection = peerConnectionResourceManager.getConnection(connectionId);
 
             if (connection == null) {
                 if (signalingParameters != null) {
-
-
                     connection = peerConnectionResourceManager.createPeerConnection(signalingParameters,
                             mediaResourceManager.getPcConstraints(), connectionId);
 

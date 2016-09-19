@@ -94,7 +94,7 @@ final class MediaResourceManager implements NWebRTCPeer.Observer {
     private NWebRTCPeer.NPeerConnectionParameters peerConnectionParameters;
     private VideoCapturerAndroid videoCapturer;
     private NMediaConfiguration.NCameraPosition currentCameraPosition;
-    private boolean isBroadcastMode;
+    private NWebRTCPeer.StreamMode streamMode;
 
     MediaResourceManager(NWebRTCPeer.NPeerConnectionParameters peerConnectionParameters,
                          LooperExecutor executor, PeerConnectionFactory factory) {
@@ -105,16 +105,15 @@ final class MediaResourceManager implements NWebRTCPeer.Observer {
         renderVideo = true;
         remoteVideoTracks = new HashMap<>();
         videoCallEnabled = peerConnectionParameters.videoCallEnabled;
-        isBroadcastMode = false;
+        streamMode = NWebRTCPeer.StreamMode.SENDRECV;
     }
 
-    public boolean isBroadcastMode() {
-        Log.e(TAG, "isBroadcastMode: " + isBroadcastMode);
-        return isBroadcastMode;
+    public NWebRTCPeer.StreamMode getStreamMode() {
+        return streamMode;
     }
 
-    public void setBroadcastMode(boolean broadcastMode) {
-        isBroadcastMode = broadcastMode;
+    public void setStreamMode(NWebRTCPeer.StreamMode streamMode) {
+        this.streamMode = streamMode;
     }
 
     void createMediaConstraints() {
@@ -175,9 +174,9 @@ final class MediaResourceManager implements NWebRTCPeer.Observer {
         }
         // Create SDP constraints.
         sdpMediaConstraints = new MediaConstraints();
-        sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveAudio", isBroadcastMode() ? "false" : "true"));
+        sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveAudio", (streamMode == NWebRTCPeer.StreamMode.SEND_ONLY) ? "false" : "true"));
         if (videoCallEnabled || peerConnectionParameters.loopback) {
-            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", isBroadcastMode() ? "false" : "true"));
+            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", (streamMode == NWebRTCPeer.StreamMode.SEND_ONLY) ? "false" : "true"));
         } else {
             sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "false"));
         }
@@ -337,8 +336,10 @@ final class MediaResourceManager implements NWebRTCPeer.Observer {
 
     void close() {
         // Uncomment only if you know what you are doing
-        localMediaStream.dispose();
-        localMediaStream = null;
+        if (localMediaStream != null) {
+            localMediaStream.dispose();
+            localMediaStream = null;
+        }
         //videoCapturer.dispose();
         //videoCapturer = null;
     }
