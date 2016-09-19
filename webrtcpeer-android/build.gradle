@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 
-version "1.0.5"
+Integer VERSION_CODE = 2016091912
+String VERSION_NAME = "1.1"
 
 android {
     compileSdkVersion 23
@@ -9,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0.5"
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
     }
     buildTypes {
         release {
