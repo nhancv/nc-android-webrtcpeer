@@ -32,7 +32,7 @@ import org.webrtc.ThreadUtils;
  * Anything less than the threshold value and the sensor  returns "NEAR".
  */
 public class ProximitySensor implements SensorEventListener {
-    private static final String TAG = "AppRTCProximitySensor";
+    private static final String TAG = ProximitySensor.class.getSimpleName();
 
     // This class should be created, started and stopped on one thread
     // (e.g. the main thread). We use |nonThreadSafe| to ensure that this is

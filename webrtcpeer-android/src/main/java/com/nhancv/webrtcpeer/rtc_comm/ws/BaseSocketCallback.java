@@ -1,8 +1,6 @@
 package com.nhancv.webrtcpeer.rtc_comm.ws;
 
 
-import com.nhancv.webrtcpeer.rtc_peer.client.kurento.models.response.ServerResponse;
-
 import org.java_websocket.handshake.ServerHandshake;
 
 /**
@@ -17,7 +15,7 @@ public class BaseSocketCallback implements SocketCallBack {
     }
 
     @Override
-    public void onMessage(ServerResponse serverResponse) {
+    public void onMessage(String serverResponse) {
         System.out.println("onMessage: " + serverResponse);
     }
 

@@ -12,6 +12,7 @@ package com.nhancv.webrtcpeer.rtc_util;
 
 import android.os.Build;
 import android.util.Log;
+import android.webkit.URLUtil;
 
 /**
  * AppRTCUtils provides helper functions for managing thread safety.
@@ -49,5 +50,9 @@ public final class Utils {
                    + "Manufacturer: " + Build.MANUFACTURER + ", "
                    + "Model: " + Build.MODEL + ", "
                    + "Product: " + Build.PRODUCT);
+    }
+
+    public static boolean validateUrl(String url) {
+        return URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url);
     }
 }

@@ -32,8 +32,8 @@ import java.util.Set;
 /**
  * AppRTCAudioManager manages all audio related parts of the AppRTC demo.
  */
-public class AudioManager {
-    private static final String TAG = "AppRTCAudioManager";
+public class RTCAudioManager {
+    private static final String TAG = RTCAudioManager.class.getSimpleName();
     private static final String SPEAKERPHONE_AUTO = "auto";
     private static final String SPEAKERPHONE_TRUE = "true";
     private static final String SPEAKERPHONE_FALSE = "false";
@@ -76,7 +76,7 @@ public class AudioManager {
     // Callback method for changes in audio focus.
     private android.media.AudioManager.OnAudioFocusChangeListener audioFocusChangeListener;
 
-    private AudioManager(Context context) {
+    private RTCAudioManager(Context context) {
         Log.d(TAG, "ctor");
         ThreadUtils.checkIsOnMainThread();
         apprtcContext = context;
@@ -113,8 +113,8 @@ public class AudioManager {
     /**
      * Construction.
      */
-    public static AudioManager create(Context context) {
-        return new AudioManager(context);
+    public static RTCAudioManager create(Context context) {
+        return new RTCAudioManager(context);
     }
 
     /**
@@ -128,16 +128,16 @@ public class AudioManager {
 
         // The proximity sensor should only be activated when there are exactly two
         // available audio devices.
-        if (audioDevices.size() == 2 && audioDevices.contains(AudioManager.AudioDevice.EARPIECE)
-            && audioDevices.contains(AudioManager.AudioDevice.SPEAKER_PHONE)) {
+        if (audioDevices.size() == 2 && audioDevices.contains(RTCAudioManager.AudioDevice.EARPIECE)
+            && audioDevices.contains(RTCAudioManager.AudioDevice.SPEAKER_PHONE)) {
             if (proximitySensor.sensorReportsNearState()) {
                 // Sensor reports that a "handset is being held up to a person's ear",
                 // or "something is covering the light sensor".
-                setAudioDeviceInternal(AudioManager.AudioDevice.EARPIECE);
+                setAudioDeviceInternal(RTCAudioManager.AudioDevice.EARPIECE);
             } else {
                 // Sensor reports that a "handset is removed from a person's ear", or
                 // "the light sensor is no longer covered".
-                setAudioDeviceInternal(AudioManager.AudioDevice.SPEAKER_PHONE);
+                setAudioDeviceInternal(RTCAudioManager.AudioDevice.SPEAKER_PHONE);
             }
         }
     }

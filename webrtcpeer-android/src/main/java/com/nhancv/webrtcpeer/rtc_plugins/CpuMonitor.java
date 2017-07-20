@@ -71,7 +71,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class CpuMonitor {
-    private static final String TAG = "CpuMonitor";
+    private static final String TAG = CpuMonitor.class.getSimpleName();
     private static final int MOVING_AVERAGE_SAMPLES = 5;
 
     private static final int CPU_STAT_SAMPLE_PERIOD_MS = 2000;

@@ -3,10 +3,6 @@ package com.nhancv.webrtcpeer.rtc_comm.ws;
 import android.app.Application;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.nhancv.webrtcpeer.rtc_peer.client.kurento.models.response.ServerResponse;
-
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -31,12 +27,10 @@ public class DefaultSocketService implements SocketService {
     private KeyStore keyStore;
     private LooperExecutor executor;
 
-    private Gson gson;
     private Application application;
     private SocketCallBack socketCallBack;
 
     public DefaultSocketService(Application application) {
-        this.gson = new Gson();
         this.application = application;
 
         this.executor = new LooperExecutor();
@@ -73,13 +67,8 @@ public class DefaultSocketService implements SocketService {
 
             @Override
             public void onMessage(String s) {
-                try {
-                    ServerResponse serverResponse = gson.fromJson(s, ServerResponse.class);
-                    if (socketCallBack != null) {
-                        socketCallBack.onMessage(serverResponse);
-                    }
-                } catch (JsonSyntaxException e) {
-                    e.printStackTrace();
+                if (socketCallBack != null) {
+                    socketCallBack.onMessage(s);
                 }
             }
 

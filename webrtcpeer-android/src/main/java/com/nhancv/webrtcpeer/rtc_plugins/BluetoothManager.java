@@ -44,12 +44,12 @@ public class BluetoothManager {
     // Maximum number of SCO connection attempts.
     private static final int MAX_SCO_CONNECTION_ATTEMPTS = 2;
     private final Context apprtcContext;
-    private final AudioManager apprtcAudioManager;
+    private final RTCAudioManager apprtcAudioManager;
     private final android.media.AudioManager audioManager;
     private final Handler handler;
     private final BluetoothProfile.ServiceListener bluetoothServiceListener;
     private final BroadcastReceiver bluetoothHeadsetReceiver;
-    int scoConnectionAttempts;
+    private int scoConnectionAttempts;
     private State bluetoothState;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothHeadset bluetoothHeadset;
@@ -64,7 +64,7 @@ public class BluetoothManager {
         }
     };
 
-    protected BluetoothManager(Context context, AudioManager audioManager) {
+    private BluetoothManager(Context context, RTCAudioManager audioManager) {
         Log.d(TAG, "ctor");
         ThreadUtils.checkIsOnMainThread();
         apprtcContext = context;
@@ -79,7 +79,7 @@ public class BluetoothManager {
     /**
      * Construction.
      */
-    static BluetoothManager create(Context context, AudioManager audioManager) {
+    static BluetoothManager create(Context context, RTCAudioManager audioManager) {
         Log.d(TAG, "create" + Utils.getThreadInfo());
         return new BluetoothManager(context, audioManager);
     }
@@ -91,8 +91,6 @@ public class BluetoothManager {
         ThreadUtils.checkIsOnMainThread();
         return bluetoothState;
     }
-
-    ;
 
     /**
      * Activates components required to detect Bluetooth devices and to enable
