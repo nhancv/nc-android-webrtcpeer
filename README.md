@@ -1,6 +1,6 @@
 webrtcpeer-android
 =================
-[![](https://jitpack.io/v/nhancv/ot-webrtcpeer-android.svg)](https://jitpack.io/#nhancv/ot-webrtcpeer-android)
+[![](https://jitpack.io/v/nhancv/nc-android-webrtcpeer.svg)](https://jitpack.io/#nhancv/nc-android-webrtcpeer)
 
 This repository contains an Android library for creating WebRTC connections.
 
