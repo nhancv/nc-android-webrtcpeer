@@ -25,6 +25,7 @@ public class PeerConnectionParameters {
     public final boolean disableBuiltInNS;
     public final boolean enableLevelControl;
     public final boolean disableWebRtcAGCAndHPF;
+    public final StreamMode streamMode;
     public final PeerConnectionClient.DataChannelParameters dataChannelParameters;
 
     public PeerConnectionParameters(boolean videoCallEnabled, boolean loopback, boolean tracing,
@@ -35,11 +36,11 @@ public class PeerConnectionParameters {
                                     String audioCodec, boolean noAudioProcessing, boolean aecDump,
                                     boolean useOpenSLES,
                                     boolean disableBuiltInAEC, boolean disableBuiltInAGC, boolean disableBuiltInNS,
-                                    boolean enableLevelControl, boolean disableWebRtcAGCAndHPF) {
+                                    boolean enableLevelControl, boolean disableWebRtcAGCAndHPF, StreamMode streamMode) {
         this(videoCallEnabled, loopback, tracing, videoWidth, videoHeight, videoFps, videoMaxBitrate,
              videoCodec, videoCodecHwAcceleration, videoFlexfecEnabled, audioStartBitrate, audioCodec,
              noAudioProcessing, aecDump, useOpenSLES, disableBuiltInAEC, disableBuiltInAGC,
-             disableBuiltInNS, enableLevelControl, disableWebRtcAGCAndHPF, null);
+             disableBuiltInNS, enableLevelControl, disableWebRtcAGCAndHPF, null, streamMode);
     }
 
     public PeerConnectionParameters(boolean videoCallEnabled, boolean loopback, boolean tracing,
@@ -51,7 +52,7 @@ public class PeerConnectionParameters {
                                     boolean useOpenSLES,
                                     boolean disableBuiltInAEC, boolean disableBuiltInAGC, boolean disableBuiltInNS,
                                     boolean enableLevelControl, boolean disableWebRtcAGCAndHPF,
-                                    PeerConnectionClient.DataChannelParameters dataChannelParameters) {
+                                    PeerConnectionClient.DataChannelParameters dataChannelParameters, StreamMode streamMode) {
         this.videoCallEnabled = videoCallEnabled;
         this.loopback = loopback;
         this.tracing = tracing;
@@ -73,5 +74,8 @@ public class PeerConnectionParameters {
         this.enableLevelControl = enableLevelControl;
         this.disableWebRtcAGCAndHPF = disableWebRtcAGCAndHPF;
         this.dataChannelParameters = dataChannelParameters;
+        this.streamMode = streamMode;
     }
+
+
 }

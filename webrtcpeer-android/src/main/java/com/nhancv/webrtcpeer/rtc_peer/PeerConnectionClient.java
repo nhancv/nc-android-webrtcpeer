@@ -536,7 +536,7 @@ public class PeerConnectionClient {
         }
 
         // Check if there is a camera on device and disable video call if not.
-        if (videoCapturer == null) {
+        if (videoCapturer == null && peerConnectionParameters.streamMode != StreamMode.RECV_ONLY) {
             Log.w(TAG, "No camera on device. Switch to audio only call.");
             videoCallEnabled = false;
         }
@@ -580,14 +580,18 @@ public class PeerConnectionClient {
         }
         // Create SDP constraints.
         sdpMediaConstraints = new MediaConstraints();
-        sdpMediaConstraints.mandatory.add(
-                new MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"));
+
+        sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveAudio",
+                                                                            (peerConnectionParameters.streamMode ==
+                                                                             StreamMode.SEND_ONLY) ?
+                                                                            "false" : "true"));
         if (videoCallEnabled || peerConnectionParameters.loopback) {
-            sdpMediaConstraints.mandatory.add(
-                    new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"));
+            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo",
+                                                                                (peerConnectionParameters.streamMode ==
+                                                                                 StreamMode.SEND_ONLY) ?
+                                                                                "false" : "true"));
         } else {
-            sdpMediaConstraints.mandatory.add(
-                    new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "false"));
+            sdpMediaConstraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "false"));
         }
     }
 
@@ -599,7 +603,7 @@ public class PeerConnectionClient {
         Log.d(TAG, "Create peer connection.");
 
         Log.d(TAG, "PCConstraints: " + pcConstraints.toString());
-        queuedRemoteCandidates = new LinkedList<IceCandidate>();
+        queuedRemoteCandidates = new LinkedList<>();
 
         if (videoCallEnabled) {
             Log.d(TAG, "EGLContext: " + renderEGLContext);
@@ -636,15 +640,17 @@ public class PeerConnectionClient {
         Logging.enableTracing("logcat:", EnumSet.of(Logging.TraceLevel.TRACE_DEFAULT));
         Logging.enableLogToDebugOutput(Logging.Severity.LS_INFO);
 
-        mediaStream = factory.createLocalMediaStream("ARDAMS");
-        if (videoCallEnabled) {
-            mediaStream.addTrack(createVideoTrack(videoCapturer));
-        }
+        if (peerConnectionParameters.streamMode != StreamMode.RECV_ONLY) {
+            mediaStream = factory.createLocalMediaStream("ARDAMS");
+            if (videoCallEnabled) {
+                mediaStream.addTrack(createVideoTrack(videoCapturer));
+            }
 
-        mediaStream.addTrack(createAudioTrack());
-        peerConnection.addStream(mediaStream);
-        if (videoCallEnabled) {
-            findVideoSender();
+            mediaStream.addTrack(createAudioTrack());
+            peerConnection.addStream(mediaStream);
+            if (videoCallEnabled) {
+                findVideoSender();
+            }
         }
 
         if (peerConnectionParameters.aecDump) {
@@ -790,6 +796,9 @@ public class PeerConnectionClient {
         executor.execute(new Runnable() {
             @Override
             public void run() {
+//                if (peerConnectionParameters.streamMode != StreamMode.RECV_ONLY) {
+//                    startVideoSource();
+//                }
                 if (peerConnection != null && !isError) {
                     Log.d(TAG, "PC Create OFFER");
                     isInitiator = true;
@@ -952,8 +961,11 @@ public class PeerConnectionClient {
         capturer.startCapture(videoWidth, videoHeight, videoFps);
 
         localVideoTrack = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource);
-        localVideoTrack.setEnabled(renderVideo);
-        localVideoTrack.addRenderer(new VideoRenderer(localRender));
+        if (localRender != null) {
+            localVideoTrack.setEnabled(renderVideo);
+            localVideoTrack.addRenderer(new VideoRenderer(localRender));
+        }
+
         return localVideoTrack;
     }
 

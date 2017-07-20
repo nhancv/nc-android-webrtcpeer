@@ -1,6 +1,7 @@
 package com.nhancv.webrtcpeer.rtc_peer.config;
 
 import com.nhancv.webrtcpeer.rtc_peer.PeerConnectionParameters;
+import com.nhancv.webrtcpeer.rtc_peer.StreamMode;
 
 /**
  * Created by nhancao on 7/19/17.
@@ -102,7 +103,15 @@ public class DefaultConfig {
                 videoCallEnabled, loopback, tracing, videoWidth, videoHeight, cameraFps, videoBitrateValue, videoCodec,
                 hwCodec, flexfecEnabled, audioBitrateValue, audioCodec,
                 noAudioProcessing, aecDump, useOpenSLES, disableBuiltInAEC, disableBuiltInAGC, disableBuiltInNS,
-                enableLevelControl, disableWebRtcAGCAndHPF);
+                enableLevelControl, disableWebRtcAGCAndHPF, StreamMode.SENDRECV);
+    }
+
+    public PeerConnectionParameters createPeerConnectionParams(StreamMode streamMode) {
+        return new PeerConnectionParameters(
+                videoCallEnabled, loopback, tracing, videoWidth, videoHeight, cameraFps, videoBitrateValue, videoCodec,
+                hwCodec, flexfecEnabled, audioBitrateValue, audioCodec,
+                noAudioProcessing, aecDump, useOpenSLES, disableBuiltInAEC, disableBuiltInAGC, disableBuiltInNS,
+                enableLevelControl, disableWebRtcAGCAndHPF, streamMode);
     }
 
     public boolean isVideoCallEnabled() {
