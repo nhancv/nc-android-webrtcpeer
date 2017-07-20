@@ -5,8 +5,10 @@ webrtcpeer-android
 This repository contains an Android library for creating WebRTC connections.
 
 Support:
-    AppRtc (https://appr.tc/): https://github.com/njovy/AppRTCDemo
-    Kurento (tested with call, composite, recorder): https://www.kurento.org
+
+    1. AppRtc (https://appr.tc/): https://github.com/njovy/AppRTCDemo
+    
+    2. Kurento (tested with call, composite, recorder): https://www.kurento.org
 
 
 
