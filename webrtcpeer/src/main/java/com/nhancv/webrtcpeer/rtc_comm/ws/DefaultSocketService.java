@@ -40,6 +40,7 @@ public class DefaultSocketService implements SocketService {
      * Need to set fore call connect method
      * application.getApplicationContext().getAssets().open("server.crt")
      */
+    @Override
     public void setCertificateSSLFile(InputStream certificateSSLFile) {
         this.certificateSSLFile = certificateSSLFile;
     }

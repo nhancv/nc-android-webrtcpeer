@@ -10,8 +10,8 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 
-Integer VERSION_CODE = 2017072013
-String VERSION_NAME = "2.1.0"
+Integer VERSION_CODE = 2017080914
+String VERSION_NAME = "2.1.2"
 
 android {
     compileSdkVersion 23
