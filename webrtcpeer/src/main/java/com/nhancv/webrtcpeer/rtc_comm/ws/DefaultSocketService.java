@@ -1,6 +1,7 @@
 package com.nhancv.webrtcpeer.rtc_comm.ws;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import org.java_websocket.client.WebSocketClient;
@@ -27,14 +28,20 @@ public class DefaultSocketService implements SocketService {
     private KeyStore keyStore;
     private LooperExecutor executor;
 
-    private Application application;
+    private InputStream certificateSSLFile;
     private SocketCallBack socketCallBack;
 
-    public DefaultSocketService(Application application) {
-        this.application = application;
-
+    public DefaultSocketService() {
         this.executor = new LooperExecutor();
         this.executor.requestStart();
+    }
+
+    /**
+     * Need to set fore call connect method
+     * application.getApplicationContext().getAssets().open("server.crt")
+     */
+    public void setCertificateSSLFile(InputStream certificateSSLFile) {
+        this.certificateSSLFile = certificateSSLFile;
     }
 
     @Override
@@ -90,8 +97,9 @@ public class DefaultSocketService implements SocketService {
 
         try {
             String scheme = uri.getScheme();
+            if (certificateSSLFile == null) throw new Exception("Need to set certificateSSLFile first");
             if (scheme.equals("https") || scheme.equals("wss")) {
-                setTrustedCertificate(application.getAssets().open("server.crt"));
+                setTrustedCertificate(certificateSSLFile);
                 // Create a TrustManager that trusts the CAs in our KeyStore
                 String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
