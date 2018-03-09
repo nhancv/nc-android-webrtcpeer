@@ -1,9 +1,5 @@
 package com.nhancv.webrtcpeer.rtc_comm.ws;
 
-import android.app.Application;
-import android.content.Context;
-import android.util.Log;
-
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -150,7 +146,6 @@ public class DefaultSocketService implements SocketService {
         executor.execute(() -> {
             if (isConnected()) {
                 try {
-                    Log.i(TAG, "send: " + message);
                     client.send(message.getBytes("UTF-8"));
                 } catch (Exception e) {
                     e.printStackTrace();
